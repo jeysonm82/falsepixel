@@ -1,0 +1,15 @@
+{% extends "base_layout.html" %}
+
+{%block content%}
+<a href='/blog'>back</a>
+<h3>{{entry.title}}</h3>
+<span>{{entry.pub_date}}</span>
+<div>
+    {{entry.content}}
+</div>
+
+<h4>Comments</h4>
+<div>
+</div>
+
+{%endblock%}
