@@ -29,3 +29,7 @@
 .clear {
 clear: both;
 }
+#cnt_msg {
+ color: red;
+ font-size: 15px;
+}

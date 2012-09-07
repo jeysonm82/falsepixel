@@ -9,7 +9,17 @@
 </div>
 
 <h4>Comments</h4>
+<span id='cnt_msg'>{{msg}}</span>
+<form method='post' action='/blog/article/{{entry.id}}'>
+    {% csrf_token %}
+    Name: {{cform.author}}<br>
+    Message: {{cform.message}}<br>
+    Type what you see: <img src='/blog/captcha/?i={{rn}}'/> {{cform.captcha}}
+    <br>
+    <input type='submit' value='Submit'/>
+</form>
 <div>
+    comments
 </div>
 
 {%endblock%}

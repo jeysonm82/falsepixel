@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from blog.views import test
+from blog.views import test, contact
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
@@ -16,4 +16,5 @@ urlpatterns = patterns('',
      url(r'^admin/', include(admin.site.urls)),
      url(r'^test/', test),
      url(r'^blog/', include('blog.urls')),
+     url(r'^contact/', contact),
 )
