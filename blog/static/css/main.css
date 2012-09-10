@@ -1,14 +1,19 @@
 #wrapper{
     width: 960px;
-    padding: 3px;
-    border: 1px solid gray;
+    padding: 5px;
+    border: 2px solid #616161;
     margin: auto;
 }
 #menu {
     list-style-type: none;
     margin: auto;
     width: 700px;
+    height: 50px;
+    margin-bottom: 30px;
 
+}
+a {
+color: #4747ff;
 }
 #menu li {
     float: left;
@@ -32,4 +37,33 @@ clear: both;
 #cnt_msg {
  color: red;
  font-size: 15px;
+}
+input, textarea {
+
+border: 1px solid; 
+}
+input {
+width: 200px;
+}
+textarea {
+width: 350px;
+}
+#id_captcha {
+width: 100px;
+}
+#main_logo{
+    text-align: center;
+}
+#footer {
+    padding: 10px;
+    text-align:center;
+}
+#elist {
+list-style-type: none;
+}
+h3 {
+display: inline;
+}
+p {
+text-align: justify;
 }

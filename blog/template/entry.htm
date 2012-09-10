@@ -2,10 +2,11 @@
 
 {%block content%}
 <a href='/blog'>back</a>
+<br>
 <h3>{{entry.title}}</h3>
 <span>{{entry.pub_date}}</span>
 <div>
-    {{entry.content}}
+    {{entry.parsed_content}}
 </div>
 
 <h4>Comments</h4>
@@ -19,7 +20,11 @@
     <input type='submit' value='Submit'/>
 </form>
 <div>
-    comments
+    <ul>
+        {% for comment in comments %}
+        <li>{{comment.pub_date}} <span>{{comment.author}}</span> said: <p>{{comment.content}}</p></li>
+        {%endfor%}
+    </ul>
 </div>
 
 {%endblock%}

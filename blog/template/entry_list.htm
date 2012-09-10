@@ -1,8 +1,8 @@
 {% extends "base_layout.html" %}
 
 {%block content%}
-<h2>Entry list</h2>
-<ul>
+<h2>Entries</h2>
+<ul id='elist'>
 {% for entry in entries %}
 <li>
 <h3><a href='/blog/article/{{entry.id}}'>{{entry.title}}</a></h3>

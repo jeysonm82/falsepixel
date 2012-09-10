@@ -12,13 +12,16 @@ class Entry(models.Model):
         return self.title
 
     def preview(self):
-        return self.content[1:min(len(self.content), 100)]
+        return self.content[0:min(len(self.content), 100)]
     
 
 class Comment(models.Model):
     author = models.CharField(max_length=100)
     content = models.CharField(max_length=400)
     is_admin = models.BooleanField(default=False)
+    entry = models.ForeignKey(Entry)
+    pub_date = models.DateField(auto_now_add=True)
+    status = models.BooleanField(default=True)
 
     def __unicode__(self):
         return "%s says %s"%(self.author, self.content[1:min(len(self.content), 100)])

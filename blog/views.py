@@ -1,11 +1,14 @@
 from django.http import HttpResponse
 from django.template import RequestContext, Context
 from django.template.loader import get_template
-from blog.models import Entry
+from blog.models import Entry, Comment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.shortcuts import redirect
 from blog.forms import CommentForm, ContactForm
+import bbcode
 import random
+from blog.util import create_captcha, send_email
+from django.utils.safestring import mark_safe 
 
 def test(request):
     """ Test view """
@@ -35,37 +38,54 @@ def get_entries(request, cat='all', page=1):
 
 def view_entry(request, e_id):
     """ View Entry """
-    print "ENTERINNG"
+    entry = Entry.objects.get(id=e_id)
+    entry.parsed_content = mark_safe(entry.content) #bbcode.render_html(entry.content) 
     msg = ''
     if(request.method == 'POST'):
+        cf = CommentForm(request.POST)
         #check captcha
         code = request.session['captcha_code']
-        print "session code", ''.join(code), 'user code', request.POST['captcha'].upper()
-        if(''.join(code) == str.strip(str(request.POST['captcha'].upper()))):
-            msg = 'Comment posted succesfully. Thanks.!'
+        if(cf.is_valid()):
+            #Check Captcha
+            if(''.join(code) == str.strip(str(request.POST['captcha'].upper()))):
+                #save comment
+                com = Comment()
+                com.author = cf.cleaned_data['author']
+                com.content = cf.cleaned_data['message']
+                com.entry = entry
+                try: 
+                    com.save()
+                    msg = 'Comment posted succesfully. Thanks.!'
+                except:
+                    msg = 'Error processing your comment. Please try again.' 
+            else:
+                msg = 'Wrong Captcha code. Please Try Again'
+            
         else:
-            msg = 'Wrong Captcha. Please Try Again'
-        #save comment
+            msg = 'Error processing your comment. Please Try Again.'
+
         request.session['comment_posted_msg'] = msg
         return redirect('/blog/article/%s'%(e_id))#TODO put marker here to go to specific part of the html
 
-    entry = Entry.objects.get(id=e_id)
     if('comment_posted_msg' in request.session):
         msg= request.session['comment_posted_msg']
         del request.session['comment_posted_msg']
-
+    comments = entry.comment_set.filter(status=True)
     cf = CommentForm()
 
     t = get_template("entry.htm")
-    c = RequestContext(request, {'entry': entry, 'cform': cf, 'rn': random.randint(1,999999), 'msg': msg})
+    c = RequestContext(request, {'entry': entry,'comments': comments, 'cform': cf, 'rn': random.randint(1,999999), 'msg': msg})
     return HttpResponse(t.render(c))
 
 def contact(request):
     msg = ''
     if(request.method == 'POST'):
         #TODO send email
+        cf = ContactForm(request.POST)
+        if(cf.is_valid()):
+            send_email('test@falsepixel.net', 'jjmc82@gmail.com', 'Falsepixel: '+ cf.cleaned_data['name'] + ' wrote to you.', cf.cleaned_data['email'] +'<br>' +cf.cleaned_data['message'])
         msg = 'Message sent. Thanks.!'
-        pass
+        
 
     t = get_template("contact.htm")
     cf = ContactForm()
@@ -74,23 +94,6 @@ def contact(request):
 
 
 def serve_captcha(request):
-    import cv2
-    import numpy as np
-    im = np.zeros((30,90,3),dtype=np.uint8)+40
-    rn = random.randint
-    #random noise
-    for r in range(75):
-        x, y = int(rn(0,im.shape[1]-1)), int(rn(0,im.shape[0]-1))
-        cv2.circle(im, (x,y),1,[rn(rn(75,105),255) for x in range(3)])
-
-    code = [chr(65+rn(0,25)).upper() for x in range(4)]
-    request.session['captcha_code'] = code
-    print_code = ' '.join(code)
-    
-    cv2.putText(im,print_code,(5,20),cv2.FONT_HERSHEY_PLAIN, 1.2,tuple([rn(rn(75,105),255) for x in range(3)]), thickness=2)
-
-    im=cv2.blur(im,(3,3))
-    
-    response = HttpResponse(cv2.imencode('.jpg', im)[1].tostring(),mimetype='image/jpeg')
-    return response
+   request.session['captcha_code'], response = create_captcha()   
+   return response
 

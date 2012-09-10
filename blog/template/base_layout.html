@@ -5,12 +5,12 @@
     </head>
     <body>
         <div id='wrapper'>
-        <div>
+        <div id='main_logo'>
             <img src='{{STATIC_URL}}falsepixel_logo.png'>
         </div>
         <ul id='menu'>
             <li><a href='/blog/'> /root </a></li>
-            <li><a href=''> About </a></li>
+            <li><a href='/blog/about/'> About </a></li>
             <li><a href='/contact/'>Contact</a></li>
         </ul>
         <div class='clear'></div>
@@ -18,7 +18,9 @@
         {%block content%}
         {%endblock%}
         </div>
-        2012
+        <div id='footer'>
+            <b> 2012</b>
+        </div>
     </div>
     </body>
 </html>
