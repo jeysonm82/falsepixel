@@ -97,3 +97,7 @@ def serve_captcha(request):
    request.session['captcha_code'], response = create_captcha()   
    return response
 
+def index(request):
+    t = get_template("index.htm")
+    c = RequestContext(request, {})
+    return HttpResponse(t.render(c))
