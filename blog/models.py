@@ -22,6 +22,7 @@ class Comment(models.Model):
     entry = models.ForeignKey(Entry)
     pub_date = models.DateField(auto_now_add=True)
     status = models.BooleanField(default=True)
+    email = models.EmailField()
 
     def __unicode__(self):
         return "%s says %s"%(self.author, self.content[1:min(len(self.content), 100)])

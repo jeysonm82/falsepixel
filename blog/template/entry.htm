@@ -1,30 +1,146 @@
 {% extends "base_layout.html" %}
-
-{%block content%}
+{%block other%}
 <a href='/blog'>back</a>
-<br>
+<br/>
+<br/>
 <h3>{{entry.title}}</h3>
-<span>{{entry.pub_date}}</span>
-<div>
+<span class='edate'>({{entry.pub_date}})</span>
+{%endblock%}
+{%block content%}
+<script>
+    $(document).ready(function(){
+        //Comments
+        $('#commentlist li:nth-child(even)').addClass('alternate');
+        
+        $('#show_comms').click(
+            function () {
+                if($(this).html() == 'Show Comments') {
+               $('#commentlist').show(300);
+               $(this).html('Hide Comments');
+           }
+            else {
+             $('#commentlist').hide(300);
+               $(this).html('Show Comments');
+            }
+ 
+
+            }
+        
+        );
+        $('#commentlist').hide();
+        $('#ext_login2').hide();
+
+        $('#captcha_im').click(
+        
+                function() {
+                    $(this).attr('src' ,'/blog/captcha/?i='+ String(Math.floor(Math.random()*1000)));
+
+                }
+                );
+
+        $('#ext_twit').click(
+            function() {
+                window.open('{% url socialauth_begin 'twitter' %}','_blank');
+            }
+        
+        );
+         $('#ext_gma').click(
+            function() {
+                window.open('{% url socialauth_begin 'google-oauth2' %}','_blank');
+            }
+        
+        );
+        $('#ext_logout').click(
+            function() {
+                $.ajax({url: '/blog/logout/'}).done(
+                        function(msg){
+                            //alert(msg);
+                            //TODO check msg
+                        }
+                );
+
+                $('#ext_login').show();
+                $('#ext_login2').hide();
+                $('#anon_details').show();
+            }
+            );
+
+            //form validation
+            //textarea max length
+            $('#id_message').keyup(
+            function (){
+                var limit = 400
+                    if($(this).val().length>limit) {
+                        t = $(this).val().substr(0, limit);
+                        $(this).val(t);
+                    }
+                }
+                );
+            $('#form_comm').submit(
+                function () {
+                    $('#val_msg').html('')
+                    var name = $('#id_author').val();
+                    var email= $('#id_email').val();
+                    var msg= $('#id_message').val();
+                    //only if not using external
+                    if($('#anon_details').css('display') != 'none') {
+                        if(name.length < 2) {
+                            $('#val_msg').html('Invalid name');
+                            return false;
+                        }
+                        
+                        if(email.length < 2) {
+                            $('#val_msg').html('Invalid email');
+                            return false;
+                        }
+                }
+
+
+                     if(msg.length < 5) {
+                        $('#val_msg').html('Invalid message');
+                        return false;
+                    }
+                    return true;
+                }
+            
+            );
+});
+</script> 
+
+<div id='entry_content'>
     {{entry.parsed_content}}
 </div>
-
-<h4>Comments</h4>
+<h3>Comments</h3>
 <span id='cnt_msg'>{{msg}}</span>
-<form method='post' action='/blog/article/{{entry.id}}'>
+<form method='post' id='form_comm' action='/blog/article/{{entry.id}}'>
     {% csrf_token %}
-    Name: {{cform.author}}<br>
+    <p id='val_msg'></p>
+    <div id='anon_details'>
+        <p><label for='id_email' >Email:</label> {{cform.email}}</p>
+        <p><label for='id_name' >Name:</label> {{cform.author}}</p>
+   </div>
+   <div id='ext_login'>
+       Or Login using: <a id='ext_twit' href='javascript: void(0);' target='_blank'>Twitter</a> <a id='ext_gma' href='javascript: void(0);'>Gmail</a><br>
+
+   </div>
+   <div id='ext_login2'>
+       <span></span> <a id="ext_logout" href="javascript: void(0);">change</a>
+   </div>
+
     Message: {{cform.message}}<br>
-    Type what you see: <img src='/blog/captcha/?i={{rn}}'/> {{cform.captcha}}
+    Type what you see: <img id='captcha_im' src='/blog/captcha/?i={{rn}}'/> {{cform.captcha}}
     <br>
     <input type='submit' value='Submit'/>
 </form>
 <div>
-    <ul>
+    <ul id='commentlist'>
         {% for comment in comments %}
-        <li>{{comment.pub_date}} <span>{{comment.author}}</span> said: <p>{{comment.content}}</p></li>
+        <li>#{{  forloop.counter }}. <span class='sdate'>{{comment.pub_date}}</span> <span>{{comment.author}}</span> said: <p>{{comment.content}}</p></li>
+        {%empty%}
+        <b>No comments yet</b>
         {%endfor%}
     </ul>
+    <p id='show_comms'>Show Comments</p>
 </div>
 
 {%endblock%}

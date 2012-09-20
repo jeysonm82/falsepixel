@@ -1,12 +1,15 @@
 {% extends "base_layout.html" %}
 
+{%block title%}
+Entries
+{%endblock%}
+
 {%block content%}
-<h2>Entries</h2>
 <ul id='elist'>
 {% for entry in entries %}
 <li>
 <h3><a href='/blog/article/{{entry.id}}'>{{entry.title}}</a></h3>
-    <span>({{entry.pub_date}})</span>
+    <span class='edate'>({{entry.pub_date}})</span>
     <div>{{entry.preview}}...<a href='/blog/article/{{entry.id}}'>Read more.</a></div>
 </li>
 {%endfor%}
@@ -20,6 +23,7 @@
         <a href='/blog/{{prev_page}}/'>Newer Entries</a>
     {%endif%}
     <br>
-    Page {{cur_page}}
+ <span id='cpage'>Current Page:
+    {%ifequal cur_page 1 %}front{%else%}{{cur_page}}{%endifequal%}.</span>
 </div>
 {%endblock%}

@@ -1,3 +1,4 @@
+import social_auth
 # Django settings for falsepixel project.
 
 DEBUG = True
@@ -60,7 +61,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/home/jason_new/temp/workspace/falsepixel/static/'
+STATIC_ROOT = '/mnt/LINUXDOCS/workspace/falsepixel/static/'
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -110,7 +111,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/home/jason_new/temp/workspace/falsepixel/blog/template/"
+    "/mnt/LINUXDOCS/workspace/falsepixel/blog/template/"
 )
 
 INSTALLED_APPS = (
@@ -124,6 +125,7 @@ INSTALLED_APPS = (
      'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
      'django.contrib.admindocs',
+     'social_auth',
      'blog'
 )
 
@@ -162,5 +164,30 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
+     'social_auth.context_processors.social_auth_by_type_backends',
 )
+
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+SOCIAL_AUTH_PIPELINE = (
+     'social_auth.backends.pipeline.social.social_auth_user',
+    #'social_auth.backends.pipeline.associate.associate_by_email',
+    'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'social_auth.backends.pipeline.user.update_user_details',
+    'social_auth.backends.pipeline.misc.save_status_to_session',
+)
+SOCIAL_AUTH_ENABLED_BACKENDS = ('twitter',)
+LOGIN = '/login/'
+LOGIN_REDIRECT_URL = '/blog/confirmation/'#TODO change this to a confirmation page
+LOGIN_ERROR_URL = '/error/'
+ #TODO make a logout
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+
+from local_settings import *
 
