@@ -22,6 +22,7 @@ def test(request):
 
 def get_entries(request, cat='all', page=1):
     """ Generates entry list of index page """
+    return redirect('/blog/')
 
     page = int(page)
     if(cat == 'all'):
