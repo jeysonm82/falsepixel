@@ -22,7 +22,6 @@ def test(request):
 
 def get_entries(request, cat='all', page=1):
     """ Generates entry list of index page """
-    return redirect('/blog/')
 
     page = int(page)
     if(cat == 'all'):
@@ -128,6 +127,8 @@ def serve_captcha(request):
    return response
 
 def index(request):
+    return redirect('/blog/')
+
     t = get_template("index.htm")
     c = RequestContext(request, {})
     return HttpResponse(t.render(c))
